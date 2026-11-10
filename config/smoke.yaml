@@ -1,0 +1,40 @@
+# Smoke-test configuration: runs the whole Python pipeline on the synthetic pair in
+# well under a minute. This is what CI executes.
+dataset:
+  name: smoke
+  rna_h5ad: data/synthetic/synthetic_RNA.h5ad
+  protein_h5ad: data/synthetic/synthetic_protein.h5ad
+  perturbation_col: perturbation
+  control_label: control
+  replicate_col: guide_id          # two guides per target in the synthetic data
+  batch_col: batch
+qc:
+  min_cells_per_gene: 10
+  min_cells_per_perturbation: 30
+  doublets: {run: true, expected_rate: 0.05, threshold: null}
+normalize:
+  n_hvg: 800
+  n_pcs: 30
+  umap: true
+edist:
+  n_pcs: 30
+  max_cells_per_group: 150
+  n_perm: 200
+pseudobulk:
+  n_pseudo_reps: 3
+  min_cells_per_rep: 15
+mixscape:
+  run: true
+  n_neighbors: 20
+  n_dims: 30
+de:
+  min_counts_per_gene: 10
+concordance:
+  protein_gene_map: {PROT00: GENE0100, PROT01: GENE0101, PROT02: GENE0102, PROT03: GENE0103, PROT04: GENE0104, PROT05: GENE0105}
+export:
+  n_rna_features: 300
+  n_top_perturbations: 6
+  splits_per_replicate: 3
+  min_cells_per_sample: 8
+output_dir: results/smoke
+seed: 0

@@ -1,0 +1,54 @@
+# Papalexi et al. 2021 (Nat Genet): ECCITE-seq pooled CRISPR screen in IFN-gamma-stimulated
+# THP-1 cells, 111 gRNAs targeting known and candidate regulators of PD-L1 plus non-targeting
+# controls, transcriptome + a small surface-protein panel including PD-L1. ~20.7k cells.
+#
+# Data (two routes, see data/README.md):
+#   A. scPerturb release: PapalexiSatija2021_eccite_RNA.h5ad + PapalexiSatija2021_eccite_protein.h5ad
+#      -> perturbation_col: perturbation, control_label: control
+#   B. pertpy loader  pt.dt.papalexi_2021()  (MuData with "rna" and "adt"), written to two h5ad files
+#      -> perturbation_col: gene_target, control_label: NT, replicate_col: guide_ID, batch_col: replicate
+#
+# VERIFY every column and ADT name against adata.obs.columns / protein var_names after download;
+# names differ between releases.
+dataset:
+  name: papalexi2021
+  rna_h5ad: data/scperturb/PapalexiSatija2021_eccite_RNA.h5ad
+  protein_h5ad: data/scperturb/PapalexiSatija2021_eccite_protein.h5ad
+  perturbation_col: perturbation
+  control_label: control
+  replicate_col: guide_id          # several gRNAs per target gene = real replicates for pseudobulk DE (VERIFY name)
+  batch_col: replicate             # biological replicate / lane; used by Scrublet and the perturbation signature (VERIFY)
+  drop_multi_perturbation: true
+qc:
+  mito_prefix: "MT-"
+  doublets: {run: true, expected_rate: 0.06, threshold: null}
+  min_cells_per_perturbation: 50
+normalize:
+  n_hvg: 2000
+  n_pcs: 50
+  umap: true
+mixscape:
+  run: true                        # escaping cells are the rule, not the exception, in this screen
+  n_neighbors: 20
+  n_dims: 40
+  min_de_genes: 5
+  iter_num: 10
+  use_ko_only_downstream: true
+edist:
+  max_cells_per_group: 300
+  n_perm: 1000
+pseudobulk:
+  n_pseudo_reps: 3                 # used only if replicate_col is missing
+  min_cells_per_rep: 20
+de:
+  n_jobs: 4
+concordance:
+  protein_gene_map:                # ADT name -> coding gene; VERIFY ADT names in the protein file
+    PDL1: CD274
+export:
+  n_rna_features: 1000
+  n_top_perturbations: 10
+  splits_per_replicate: 3
+  min_cells_per_sample: 20
+output_dir: results/papalexi2021
+seed: 0
