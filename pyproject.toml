@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scpert"
+version = "0.1.0"
+description = "QC, normalisation, perturbation-effect sizing, DE and pseudobulk export for paired RNA + protein single-cell perturbation data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Mazen Istanbouli"}]
+dependencies = [
+  "anndata>=0.10",
+  "scanpy>=1.10",
+  "scikit-misc>=0.3",
+  "scikit-learn>=1.3",
+  "scrublet>=0.2",
+  "leidenalg>=0.10",
+  "igraph>=0.11",
+  "pydeseq2>=0.4",
+  "statsmodels>=0.14",
+  "pyyaml>=6",
+  "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
