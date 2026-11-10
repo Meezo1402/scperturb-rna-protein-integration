@@ -47,9 +47,11 @@ jobs:
         with:
           r-version: "release"
           use-public-rspm: true
-      - name: Install mixOmics
-        run: |
-          Rscript -e 'install.packages("BiocManager"); BiocManager::install("mixOmics", ask = FALSE, update = FALSE)'
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: bioc::mixOmics
+      - name: Check mixOmics loads
+        run: Rscript -e 'library(mixOmics); cat("mixOmics", as.character(packageVersion("mixOmics")), "\n")'
       - name: DIABLO on the smoke export
         run: Rscript scripts/06_diablo_integration.R --input results/smoke/diablo_input --out results/smoke/diablo --nrepeat 3
       - name: Show metrics
