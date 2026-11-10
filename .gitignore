@@ -1,0 +1,23 @@
+# data and results are generated or downloaded, never committed
+data/synthetic/
+data/scperturb/
+results/*
+!results/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+.ipynb_checkpoints/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
