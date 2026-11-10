@@ -1,0 +1,44 @@
+# Frangieh et al. 2021, Perturb-CITE-seq in patient-derived melanoma cells (~218k cells, 248
+# perturbations, 20 surface proteins, three culture conditions). Secondary dataset: the same
+# pipeline runs on it, but the three-condition design needs batch_col set and the E-test and
+# DE stages take considerably longer.
+# (scPerturb files: FrangiehIzar2021_RNA.h5ad + FrangiehIzar2021_protein.h5ad).
+# Download both from the scPerturb Zenodo record linked at https://projects.sanderlab.org/scperturb/
+# and place them in data/scperturb/. Column names below follow the scPerturb schema;
+# check `adata.obs.columns` after download and adjust replicate_col / batch_col.
+dataset:
+  name: frangieh2021
+  rna_h5ad: data/scperturb/FrangiehIzar2021_RNA.h5ad
+  protein_h5ad: data/scperturb/FrangiehIzar2021_protein.h5ad
+  perturbation_col: perturbation
+  control_label: control
+  replicate_col: null              # set to the sgRNA / guide column if present (several guides per target)
+  batch_col: null                  # e.g. "condition" (control / co-culture / IFN-gamma) if analysed jointly
+  drop_multi_perturbation: true
+qc:
+  mito_prefix: "MT-"
+  doublets: {run: true, expected_rate: 0.06, threshold: null}
+  min_cells_per_perturbation: 50
+normalize:
+  n_hvg: 2000
+  n_pcs: 50
+  umap: true
+mixscape:
+  run: true
+  n_neighbors: 20
+  n_dims: 40
+edist:
+  max_cells_per_group: 300
+  n_perm: 1000
+pseudobulk:
+  n_pseudo_reps: 3               # used only when replicate_col is null
+  min_cells_per_rep: 20
+de:
+  n_jobs: 4
+export:
+  n_rna_features: 1000
+  n_top_perturbations: 10
+  splits_per_replicate: 3          # pseudobulk samples per class = replicates x splits
+  min_cells_per_sample: 20
+output_dir: results/frangieh2021
+seed: 0
